@@ -3,6 +3,8 @@ import shutil
 import zipfile
 import argparse
 from pathlib import Path
+from xml.dom.minidom import parse
+from xml.parsers.expat import ExpatError
 
 
 class XLSXManager:
@@ -48,7 +50,38 @@ class XLSXManager:
         with zipfile.ZipFile(xlsx_path, 'r') as zip_ref:
             zip_ref.extractall(output_dir)
 
+        # Format all XML files in the extracted directory
+        self._format_xml_files(output_dir)
+
         return output_dir
+
+    def _format_xml_files(self, directory):
+        """
+        Format all XML files in the given directory and its subdirectories.
+
+        Args:
+            directory (Path): Directory containing XML files to format
+        """
+        for root, _, files in os.walk(directory):
+            for file in files:
+                file_path = Path(root) / file
+                if file_path.suffix.lower() == '.xml':
+                    try:
+                        # Parse and format the XML file
+                        dom = parse(str(file_path))
+                        formatted_xml = dom.toprettyxml(indent='  ')
+
+                        # Remove extra blank lines that minidom adds
+                        formatted_lines = [
+                            line for line in formatted_xml.splitlines()
+                            if line.strip()
+                        ]
+                        formatted_xml = '\n'.join(formatted_lines) + '\n'
+
+                        # Write the formatted XML back to the file
+                        file_path.write_text(formatted_xml, encoding='utf-8')
+                    except (ExpatError, IOError) as e:
+                        print(f"Warning: Could not format {file_path}: {e}")
 
     def pack_xlsx(self, dir_name, output_filename=None):
         """
