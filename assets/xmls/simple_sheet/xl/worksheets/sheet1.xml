@@ -3,7 +3,7 @@
   <dimension ref="A1:B4"/>
   <sheetViews>
     <sheetView tabSelected="1" workbookViewId="0">
-      <selection activeCell="A3" sqref="A3"/>
+      <selection activeCell="D3" sqref="D3"/>
     </sheetView>
   </sheetViews>
   <sheetFormatPr baseColWidth="10" defaultRowHeight="16" x14ac:dyDescent="0.2"/>
